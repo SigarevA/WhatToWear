@@ -95,8 +95,8 @@ dependencies {
     implementation(AppDependencies.DB.roomKtx)
     ksp(AppDependencies.DB.roomCompiler)
 
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("com.yandex.android:maps.mobile:4.1.0-lite")
+    implementation(AppDependencies.DI.hiltNavigation)
+    implementation(AppDependencies.Yandex.maps)
 }
 
 kapt {

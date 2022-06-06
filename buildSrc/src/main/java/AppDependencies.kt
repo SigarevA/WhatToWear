@@ -44,6 +44,8 @@ object AppDependencies {
     object DI {
         const val hiltAndroid = "com.google.dagger:hilt-android:2.40"
         const val hiltAndroidCompiler = "com.google.dagger:hilt-android-compiler:2.40"
+
+        const val hiltNavigation = "androidx.hilt:hilt-navigation-compose:1.0.0"
     }
 
     object Navigation {
@@ -51,5 +53,9 @@ object AppDependencies {
 
         const val composeDestinationsCore = "io.github.raamcosta.compose-destinations:core:$version"
         const val composeDestinationsKsp = "io.github.raamcosta.compose-destinations:ksp:$version"
+    }
+
+    object Yandex {
+        const val maps = "com.yandex.android:maps.mobile:4.1.0-lite"
     }
 }
