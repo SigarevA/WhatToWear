@@ -90,6 +90,13 @@ dependencies {
 
     implementation(AppDependencies.Navigation.composeDestinationsCore)
     ksp(AppDependencies.Navigation.composeDestinationsKsp)
+
+    implementation(AppDependencies.DB.roomRuntime)
+    implementation(AppDependencies.DB.roomKtx)
+    ksp(AppDependencies.DB.roomCompiler)
+
+    implementation(AppDependencies.DI.hiltNavigation)
+    implementation(AppDependencies.Yandex.maps)
 }
 
 kapt {

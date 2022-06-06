@@ -28,13 +28,24 @@ object AppDependencies {
 
     object Network {
         const val retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
-        const val retrofitConverter = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
+        const val retrofitConverter =
+            "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
         const val kotlinxSerialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0"
+    }
+
+    object DB {
+        private const val roomVersion = "2.4.2"
+
+        const val roomRuntime = "androidx.room:room-runtime:$roomVersion"
+        const val roomCompiler = "androidx.room:room-compiler:$roomVersion"
+        const val roomKtx = "androidx.room:room-ktx:$roomVersion"
     }
 
     object DI {
         const val hiltAndroid = "com.google.dagger:hilt-android:2.40"
         const val hiltAndroidCompiler = "com.google.dagger:hilt-android-compiler:2.40"
+
+        const val hiltNavigation = "androidx.hilt:hilt-navigation-compose:1.0.0"
     }
 
     object Navigation {
@@ -42,5 +53,9 @@ object AppDependencies {
 
         const val composeDestinationsCore = "io.github.raamcosta.compose-destinations:core:$version"
         const val composeDestinationsKsp = "io.github.raamcosta.compose-destinations:ksp:$version"
+    }
+
+    object Yandex {
+        const val maps = "com.yandex.android:maps.mobile:4.1.0-lite"
     }
 }
