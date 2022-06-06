@@ -1,5 +1,8 @@
 package ru.sigarev.whattowear.data.network.responses
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 class DailyResponse(
     val clouds: Int,
     val dew_point: Double,

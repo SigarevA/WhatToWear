@@ -28,8 +28,17 @@ object AppDependencies {
 
     object Network {
         const val retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
-        const val retrofitConverter = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
+        const val retrofitConverter =
+            "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
         const val kotlinxSerialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0"
+    }
+
+    object DB {
+        private const val roomVersion = "2.4.2"
+
+        const val roomRuntime = "androidx.room:room-runtime:$roomVersion"
+        const val roomCompiler = "androidx.room:room-compiler:$roomVersion"
+        const val roomKtx = "androidx.room:room-ktx:$roomVersion"
     }
 
     object DI {

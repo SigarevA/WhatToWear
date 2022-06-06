@@ -3,7 +3,6 @@ package ru.sigarev.whattowear.ui
 import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.rememberNavHostEngine
-import ru.sigarev.whattowear.ui.home.NavGraphs
 
 @Composable
 fun WhatToWearApp() {

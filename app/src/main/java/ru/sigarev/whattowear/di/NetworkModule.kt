@@ -30,7 +30,6 @@ object NetworkModule {
             ignoreUnknownKeys = true
         }
 
-
     @Singleton
     @Provides
     fun provideFactory(json: Json): Converter.Factory {

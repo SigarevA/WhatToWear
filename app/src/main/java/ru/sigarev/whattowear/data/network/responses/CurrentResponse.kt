@@ -1,5 +1,8 @@
 package ru.sigarev.whattowear.data.network.responses
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CurrentResponse(
     val clouds: Int,
     val dew_point: Double,
@@ -12,7 +15,7 @@ data class CurrentResponse(
     val temp: Double,
     val uvi: Double,
     val visibility: Int,
-    val weather: List<Weather>,
+    val weather: List<WeatherXResponse>,
     val wind_deg: Int,
     val wind_speed: Double
 )
