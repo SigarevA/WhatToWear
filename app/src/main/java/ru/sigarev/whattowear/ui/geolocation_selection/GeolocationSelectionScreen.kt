@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -28,10 +30,17 @@ import ru.sigarev.whattowear.ui.utils.rememberMapViewWithLifecycle
 @Destination
 @Composable
 fun GeolocationSelectionScreen(
+    viewModel: GeolocationSelectionViewModel = hiltViewModel(),
     navigator: DestinationsNavigator
 ) {
-    GeolocationSelectionContent {
+    val state = viewModel.state.collectAsState()
+    if (state.value.isOpenNextStep) {
         navigator.navigate(SettingLocationNameScreenDestination())
+        viewModel.clearAction()
+    }
+
+    GeolocationSelectionContent {
+        viewModel.processOnTapMap(it.latitude, it.longitude)
     }
 }
 
@@ -45,9 +54,7 @@ fun GeolocationSelectionContent(
         AndroidView({ mapView }) {
             mapView.map.addInputListener(object : InputListener {
                 override fun onMapTap(p0: Map, p1: Point) {
-                    Log.d("HomeScreen", "onMapTap - 2")
                     onTapPoint(p1)
-                    Log.d("HomeScreen", "onMapTap")
                     p1.latitude
                     p1.longitude
                 }
@@ -79,3 +86,5 @@ fun GeolocationSelectionContent(
         }
     }
 }
+
+private const val TAG = "GSScreen"

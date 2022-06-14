@@ -5,4 +5,5 @@ import ru.sigarev.whattowear.domain.models.LocationWithTemperature
 
 interface GetLocationsWithCurrentTemperature {
     fun fetch(): Flow<List<LocationWithTemperature>>
+    suspend fun changeFavorite(uid: Int, isFavorite: Boolean)
 }

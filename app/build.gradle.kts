@@ -4,6 +4,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     kotlin("kapt")
+    kotlin("plugin.serialization")
     id("dagger.hilt.android.plugin")
     id("com.google.devtools.ksp") version "1.6.21-1.0.5"
 }
@@ -87,6 +88,7 @@ dependencies {
     implementation(AppDependencies.Network.retrofit)
     implementation(AppDependencies.Network.retrofitConverter)
     implementation(AppDependencies.Network.kotlinxSerialization)
+    implementation(AppDependencies.Network.logger)
 
     implementation(AppDependencies.Navigation.composeDestinationsCore)
     ksp(AppDependencies.Navigation.composeDestinationsKsp)
@@ -97,6 +99,8 @@ dependencies {
 
     implementation(AppDependencies.DI.hiltNavigation)
     implementation(AppDependencies.Yandex.maps)
+
+    implementation(AppDependencies.UI.accompanistSwiperefresh)
 }
 
 kapt {

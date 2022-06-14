@@ -12,5 +12,14 @@ interface LocationDAO {
     fun getAll(): Flow<List<Location>>
 
     @Insert
-    fun insert(location: Location)
+    suspend fun insert(location: Location)
+
+    @Query("UPDATE Location SET isFavorite = :isFavorite WHERE uid = :uid")
+    suspend fun updateFavorite(uid: Int, isFavorite: Boolean)
+
+    @Query("SELECT * FROM Location WHERE uid = :uid")
+    suspend fun fetchLocation(uid: Int): Location
+
+    @Query("DELETE FROM Location WHERE uid = :uid")
+    suspend fun deleteById(uid: Int)
 }

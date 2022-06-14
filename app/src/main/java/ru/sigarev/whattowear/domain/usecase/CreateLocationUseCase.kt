@@ -1,5 +1,6 @@
 package ru.sigarev.whattowear.domain.usecase
 
 interface CreateLocationUseCase {
-    fun setLocation()
+    suspend fun setLocation(latitude: Double, longitude: Double)
+    suspend fun save(name: String)
 }

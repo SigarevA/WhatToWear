@@ -1,6 +1,6 @@
 package ru.sigarev.whattowear.domain.models
 
-data class LocationWithTemperature(
+data class LocationWithWeather(
     val location: Location,
-    val currentTemperature: Float
+    val weather: Weather
 )
