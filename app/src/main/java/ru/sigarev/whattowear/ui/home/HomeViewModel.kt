@@ -33,9 +33,6 @@ class HomeViewModel @Inject constructor(
                     loading = false,
                     locationsWithTemperature = locations
                 )
-                locations.forEach {
-                    Log.d("SA", "$it")
-                }
             }
             .catch { cause ->
                 Log.e(TAG, "cause flow", cause)

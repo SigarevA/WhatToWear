@@ -29,20 +29,18 @@ class DetailLocationViewModel @Inject constructor(
 
     private fun initLoading() {
         viewModelScope.launch {
-            Log.d(TAG, "initLoading : start")
             newState { copy(isLoading = true) }
             try {
                 val locationWeather =
                     detailLocationUseCase.fetchLocationWithWeather(_state.value.uid)
                 newState { copy(isLoading = false, content = locationWeather) }
-                Log.d(TAG, "initLoading : success")
             } catch (ex: Exception) {
-                Log.e(TAG, "initLoading : error ", ex)
                 newState { copy(isLoading = false, exception = ex) }
             }
         }
     }
 
+    // Todo Not completed
     fun processRefresh() {
         if (!_state.value.isLoading)
             viewModelScope.launch {

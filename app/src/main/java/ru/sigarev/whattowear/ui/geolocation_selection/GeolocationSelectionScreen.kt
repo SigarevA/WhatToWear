@@ -1,6 +1,5 @@
 package ru.sigarev.whattowear.ui.geolocation_selection
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.FloatingActionButton
@@ -55,21 +54,14 @@ fun GeolocationSelectionContent(
             mapView.map.addInputListener(object : InputListener {
                 override fun onMapTap(p0: Map, p1: Point) {
                     onTapPoint(p1)
-                    p1.latitude
-                    p1.longitude
                 }
 
                 override fun onMapLongTap(p0: Map, p1: Point) {
-                    Log.d("HomeScreen", "long onMapTap")
                 }
 
             })
-            mapView.setOnClickListener {
-                Log.d("HomeScreen", "click")
-            }
             coroutineScope.launch {
                 mapView.setOnClickListener {
-                    Log.d("HomeScreen", "click")
                 }
             }
         }
