@@ -19,5 +19,6 @@ fun WeatherResponse.toModel() =
                 morn,
                 night
             )
-        }
+        },
+        current.weather[0].icon
     )

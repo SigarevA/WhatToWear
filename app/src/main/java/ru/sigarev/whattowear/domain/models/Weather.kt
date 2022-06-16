@@ -7,5 +7,6 @@ data class Weather(
     val pressure: Int,
     val windSpeed: Double,
     val mainWeather: String,
-    val dayTemperature: DayTemperature
+    val dayTemperature: DayTemperature,
+    val icon: String
 )

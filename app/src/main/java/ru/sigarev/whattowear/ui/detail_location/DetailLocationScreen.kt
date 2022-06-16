@@ -1,5 +1,6 @@
 package ru.sigarev.whattowear.ui.detail_location
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -15,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
@@ -24,6 +26,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.sigarev.whattowear.R
 import ru.sigarev.whattowear.domain.models.LocationWithWeather
+import ru.sigarev.whattowear.utils.Constraints
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -185,10 +188,20 @@ fun SuccessDetailLocationContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_outline_cloud),
-                    contentDescription = null,
-                    modifier = Modifier.size(72.dp)
+                Log.d("trt", "${Constraints.imageWeatherBaseUrl}${content.weather.icon}.png")
+                AsyncImage(
+                    model = "${Constraints.imageWeatherBaseUrl}${content.weather.icon}.png",
+                    //model = "https://thumbs.dreamstime.com/b/rainbow-love-heart-background-red-wood-60045149.jpg",
+                    contentDescription = "icon weather",
+                    placeholder = painterResource(R.drawable.ic_outline_cloud),
+                    error = painterResource(R.drawable.ic_outline_cloud),
+                    modifier = Modifier.size(72.dp),
+                    onLoading = {
+                        Log.d("trt", "loading")
+                    },
+                    onError = {
+                        Log.e("trt", "error")
+                    }
                 )
                 Text(
                     content.weather.currentTemperature.toString(),
