@@ -1,11 +1,12 @@
 package ru.sigarev.whattowear.ui.detail_location
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import ru.sigarev.whattowear.domain.usecase.DetailLocationUseCase
@@ -14,10 +15,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailLocationViewModel @Inject constructor(
-    private val stateHandle: SavedStateHandle,
+    stateHandle: SavedStateHandle,
     private val detailLocationUseCase: DetailLocationUseCase
 ) : ViewModel() {
     private val _state: MutableStateFlow<DetailLocationState>
+    private val _viewEffects = MutableSharedFlow<DetailLocationViewEffect>()
+    val viewEffects = _viewEffects.asSharedFlow()
 
     init {
         val args = DetailLocationScreenDestination.argsFrom(stateHandle)
@@ -60,7 +63,15 @@ class DetailLocationViewModel @Inject constructor(
     }
 
     fun processDismissDeletion() {
-        _state.value = _state.value.copy(isDeletion = false)
+        newState { copy(isDeletion = false) }
+    }
+
+    fun processLocationDelete() {
+        viewModelScope.launch {
+            detailLocationUseCase.delete(_state.value.uid)
+            newState { copy(isDeletion = false) }
+            _viewEffects.emit(DetailLocationViewEffect.CloseDetailScreen)
+        }
     }
 
     private fun newState(map: DetailLocationState.() -> DetailLocationState) {

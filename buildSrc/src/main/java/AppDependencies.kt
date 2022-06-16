@@ -18,6 +18,7 @@ object AppDependencies {
 
         const val accompanistSwiperefresh =
             "com.google.accompanist:accompanist-swiperefresh:${Versions.accompanist}"
+        const val coliCompose = "io.coil-kt:coil-compose:${Versions.coil}"
     }
 
     object Test {

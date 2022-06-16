@@ -6,10 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -23,6 +20,8 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import ru.sigarev.whattowear.R
 import ru.sigarev.whattowear.domain.models.LocationWithWeather
 import java.text.SimpleDateFormat
@@ -49,43 +48,66 @@ fun DetailLocationScreen(
     )
 
     if (state.isDeletion) {
-        Dialog(onDismissRequest = { viewModel.processDismissDeletion() }) {
-            Surface(
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        stringResource(R.string.detail_location_screen_title_dialog),
-                        color = MaterialTheme.colors.onSurface,
-                        style = MaterialTheme.typography.subtitle1,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                    Text(
-                        stringResource(R.string.detail_location_screen_subtitle_dialog),
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.65f),
-                        style = MaterialTheme.typography.body2,
-                        modifier = Modifier.padding(top = 16.dp)
-                    )
-                    Row(
-                        horizontalArrangement = Arrangement.End,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp),
-                    ) {
-                        TextButton(onClick = { /*TODO*/ }) {
-                            Text(
-                                stringResource(R.string.detail_location_screen_cancel_dialog),
-                                color = MaterialTheme.colors.onSurface,
-                                style = MaterialTheme.typography.button
-                            )
-                        }
-                        TextButton(onClick = { /*TODO*/ }) {
-                            Text(
-                                stringResource(id = R.string.detail_location_screen_delete_dialog),
-                                color = MaterialTheme.colors.error,
-                                style = MaterialTheme.typography.button
-                            )
-                        }
+        LocationDeletionDialog(
+            dismiss = { viewModel.processDismissDeletion() },
+            onNegativeClick = { viewModel.processLocationDelete() }
+        )
+    }
+
+    LaunchedEffect(state.uid) {
+        viewModel.viewEffects
+            .onEach {
+                when (it) {
+                    DetailLocationViewEffect.CloseDetailScreen -> {
+                        navigator.navigateUp()
+                    }
+                }
+            }
+            .launchIn(this)
+    }
+}
+
+@Composable
+fun LocationDeletionDialog(
+    dismiss: () -> Unit,
+    onNegativeClick: () -> Unit
+) {
+    Dialog(onDismissRequest = { dismiss() }) {
+        Surface(
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    stringResource(R.string.detail_location_screen_title_dialog),
+                    color = MaterialTheme.colors.onSurface,
+                    style = MaterialTheme.typography.subtitle1,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+                Text(
+                    stringResource(R.string.detail_location_screen_subtitle_dialog),
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.65f),
+                    style = MaterialTheme.typography.body2,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                ) {
+                    TextButton(onClick = { dismiss() }) {
+                        Text(
+                            stringResource(R.string.detail_location_screen_cancel_dialog),
+                            color = MaterialTheme.colors.onSurface,
+                            style = MaterialTheme.typography.button
+                        )
+                    }
+                    TextButton(onClick = { onNegativeClick() }) {
+                        Text(
+                            stringResource(id = R.string.detail_location_screen_delete_dialog),
+                            color = MaterialTheme.colors.error,
+                            style = MaterialTheme.typography.button
+                        )
                     }
                 }
             }

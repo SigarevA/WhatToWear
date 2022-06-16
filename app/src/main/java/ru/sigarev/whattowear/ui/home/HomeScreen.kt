@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,11 +19,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import ru.sigarev.whattowear.R
 import ru.sigarev.whattowear.domain.models.LocationWithTemperature
 import ru.sigarev.whattowear.ui.destinations.DetailLocationScreenDestination
@@ -58,15 +61,11 @@ fun HomeScreen(
         },
         onClickRemoveFavorite = {
             viewModel.processOnClickFavorite(it, false)
+        },
+        onRefresh = {
+            viewModel.processOnRefresh()
         }
     )
-
-    LaunchedEffect(true) {
-        viewModel.state
-            .onEach {
-
-            }.launchIn(this)
-    }
 }
 
 @Composable
@@ -78,7 +77,8 @@ fun HomeScreenContent(
     onClickAddingLocation: () -> Unit,
     onClickLocation: (Int) -> Unit,
     onClickAddFavorite: (Int) -> Unit,
-    onClickRemoveFavorite: (Int) -> Unit
+    onClickRemoveFavorite: (Int) -> Unit,
+    onRefresh: () -> Unit
 ) {
     Box(contentAlignment = Alignment.BottomCenter) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -89,29 +89,40 @@ fun HomeScreenContent(
                         text = { Text(text = stringResource(id = title.stringId)) })
                 }
             }
-            stateScreen.locationsWithTemperature?.let {
-                LazyColumn {
-                    items(it) { locationInList ->
-                        LocationListComponent(
-                            locationInList, onClickLocation,
-                            onClickAddFavorite = onClickAddFavorite,
-                            onClickRemoveFavorite = onClickRemoveFavorite
+            stateScreen.locationsWithTemperature?.let { locations ->
+                if (locations.isEmpty())
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "You don't have any added locations.\nTap the button below to get started.",
+                            color = MaterialTheme.colors.onSurface,
+                            style = MaterialTheme.typography.body1,
                         )
                     }
-                }
+                else
+                    SwipeRefresh(
+                        state = rememberSwipeRefreshState(stateScreen.isRefreshing),
+                        onRefresh = { onRefresh() }
+                    ) {
+                        LazyColumn {
+                            items(locations) { locationInList ->
+                                LocationListComponent(
+                                    locationInList, onClickLocation,
+                                    onClickAddFavorite = onClickAddFavorite,
+                                    onClickRemoveFavorite = onClickRemoveFavorite
+                                )
+                            }
+                        }
+                    }
             }
         }
-        FloatingActionButton(
-            onClick = { onClickAddingLocation() },
-            backgroundColor = Color.White,
-            contentColor = Color.Black,
-            modifier = Modifier.padding(end = 16.dp, bottom = 32.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_add),
-                contentDescription = null
-            )
-        }
+
+        AddFloatingButtonComponent(
+            Modifier.padding(end = 16.dp, bottom = 32.dp),
+            onClickAddingLocation
+        )
     }
 }
 
@@ -168,6 +179,24 @@ fun FavoriteIconButton(
     }) {
         Icon(
             painterResource(id = iconSrc),
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
+fun AddFloatingButtonComponent(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    FloatingActionButton(
+        onClick = { onClick() },
+        backgroundColor = Color.White,
+        contentColor = Color.Black,
+        modifier = modifier
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_add),
             contentDescription = null
         )
     }

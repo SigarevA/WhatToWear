@@ -6,6 +6,7 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,35 +48,49 @@ fun GeolocationSelectionScreen(
 fun GeolocationSelectionContent(
     onTapPoint: (Point) -> Unit
 ) {
+    val inputListener = remember {
+        object : InputListener {
+            override fun onMapTap(p0: Map, p1: Point) {
+                onTapPoint(p1)
+            }
+
+            override fun onMapLongTap(p0: Map, p1: Point) {
+            }
+        }
+    }
     val mapView = rememberMapViewWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
     Box(contentAlignment = Alignment.BottomEnd) {
         AndroidView({ mapView }) {
-            mapView.map.addInputListener(object : InputListener {
-                override fun onMapTap(p0: Map, p1: Point) {
-                    onTapPoint(p1)
-                }
-
-                override fun onMapLongTap(p0: Map, p1: Point) {
-                }
-
-            })
+            mapView.map.addInputListener(inputListener)
             coroutineScope.launch {
                 mapView.setOnClickListener {
                 }
             }
         }
-        FloatingActionButton(
-            onClick = { },
-            backgroundColor = Color.White,
-            contentColor = Color.Black,
-            modifier = Modifier.padding(end = 16.dp, bottom = 32.dp)
+        CurrentGeoPositionComponent(
+            Modifier.padding(end = 16.dp, bottom = 32.dp)
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_location_searching),
-                contentDescription = null
-            )
+
         }
+    }
+}
+
+@Composable
+fun CurrentGeoPositionComponent(
+    modifier: Modifier = Modifier,
+    onclick: () -> Unit
+) {
+    FloatingActionButton(
+        onClick = { onclick() },
+        backgroundColor = Color.White,
+        contentColor = Color.Black,
+        modifier = modifier
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_location_searching),
+            contentDescription = null
+        )
     }
 }
 

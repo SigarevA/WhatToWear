@@ -19,4 +19,6 @@ object Versions {
 
     const val material = "1.6.0"
     const val accompanist = "0.24.9-beta"
+
+    const val coil = "2.1.0"
 }
