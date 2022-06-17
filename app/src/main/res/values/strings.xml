@@ -3,4 +3,21 @@
 
     <string name="home_tab_all">All</string>
     <string name="home_tab_favorites">Favorites</string>
+    <string name="setting_location__screen_btn_text">Next</string>
+    <string name="setting_location_title_screen">LocationName</string>
+    <string name="item_location_list_subtitle">Current temperature %s</string>
+
+    <string name="detail_location_screen_title_dialog">Delete location?</string>
+    <string name="detail_location_screen_subtitle_dialog">This action cannot be undone.</string>
+    <string name="detail_location_screen_cancel_dialog">CANCEL</string>
+    <string name="detail_location_screen_delete_dialog">DELETE</string>
+
+    <string name="detail_location_wind">wind %f m/s from NE</string>
+    <string name="detail_location_humidity">humidity %d%%</string>
+    <string name="detail_location_current_pressure">pressure %d hPa</string>
+    
+    <string name="detail_location_morning">Morning</string>
+    <string name="detail_location_day">Day</string>
+    <string name="detail_location_evening">Evening</string>
+    <string name="detail_location_night">Night</string>
 </resources>

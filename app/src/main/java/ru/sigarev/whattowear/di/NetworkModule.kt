@@ -7,7 +7,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
 import javax.inject.Singleton
@@ -19,6 +21,10 @@ object NetworkModule {
     @Provides
     fun provideClient(): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor()
+                .apply {
+                    setLevel(HttpLoggingInterceptor.Level.BODY)
+                })
             .retryOnConnectionFailure(false)
             .build()
     }
@@ -36,7 +42,7 @@ object NetworkModule {
         val json = Json {
             ignoreUnknownKeys = true
         }
-        return json.asConverterFactory(MediaType.get("application/json"))
+        return json.asConverterFactory("application/json".toMediaType())
     }
 
     @Singleton
@@ -46,7 +52,7 @@ object NetworkModule {
         factory: Converter.Factory
     ): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://api.openweathermap.org/data/3.0/")
+            .baseUrl("https://api.openweathermap.org/data/2.5/")
             .client(client)
             .addConverterFactory(factory)
             .build()

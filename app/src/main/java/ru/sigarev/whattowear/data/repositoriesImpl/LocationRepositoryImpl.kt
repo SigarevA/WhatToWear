@@ -8,4 +8,19 @@ import ru.sigarev.whattowear.domain.repositories.LocationRepository
 internal class LocationRepositoryImpl(private val locationDAO: LocationDAO) : LocationRepository {
     override val locations: Flow<List<Location>>
         get() = locationDAO.getAll()
+
+    override suspend fun save(location: Location) {
+        locationDAO.insert(location)
+    }
+
+    override suspend fun updateIsFavorite(uid: Int, isFavorite: Boolean) {
+        locationDAO.updateFavorite(uid, isFavorite)
+    }
+
+    override suspend fun findLocationById(uid: Int): Location =
+        locationDAO.fetchLocation(uid)
+
+    override suspend fun deleteLocationById(uid: Int) {
+        locationDAO.deleteById(uid)
+    }
 }

@@ -4,6 +4,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     kotlin("kapt")
+    kotlin("plugin.serialization")
     id("dagger.hilt.android.plugin")
     id("com.google.devtools.ksp") version "1.6.21-1.0.5"
 }
@@ -26,6 +27,7 @@ android {
         properties.load(project.rootProject.file("local.properties").inputStream())
 
         buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
+        buildConfigField("String", "YANDEX_MAP_KEY", "\"${properties.getProperty("YANDEX_MAP_KEY")}\"")
     }
 
     buildTypes {
@@ -87,6 +89,7 @@ dependencies {
     implementation(AppDependencies.Network.retrofit)
     implementation(AppDependencies.Network.retrofitConverter)
     implementation(AppDependencies.Network.kotlinxSerialization)
+    implementation(AppDependencies.Network.logger)
 
     implementation(AppDependencies.Navigation.composeDestinationsCore)
     ksp(AppDependencies.Navigation.composeDestinationsKsp)
@@ -97,6 +100,9 @@ dependencies {
 
     implementation(AppDependencies.DI.hiltNavigation)
     implementation(AppDependencies.Yandex.maps)
+
+    implementation(AppDependencies.UI.accompanistSwiperefresh)
+    implementation(AppDependencies.UI.coliCompose)
 }
 
 kapt {
