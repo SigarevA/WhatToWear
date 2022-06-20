@@ -2,7 +2,7 @@ package ru.sigarev.whattowear.domain.models
 
 data class Weather(
     val currentDt: Long,
-    val currentTemperature: Float,
+    val currentTemperature: Int,
     val humidity: Int,
     val pressure: Int,
     val windSpeed: Double,

@@ -30,7 +30,7 @@ class DetailLocationViewModel @Inject constructor(
 
     val state = _state.asStateFlow()
 
-    private fun initLoading() {
+    fun initLoading() {
         viewModelScope.launch {
             newState { copy(isLoading = true) }
             try {
@@ -43,7 +43,6 @@ class DetailLocationViewModel @Inject constructor(
         }
     }
 
-    // Todo Not completed
     fun processRefresh() {
         if (!_state.value.isLoading)
             viewModelScope.launch {

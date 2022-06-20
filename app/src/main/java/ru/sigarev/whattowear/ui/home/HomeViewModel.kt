@@ -23,15 +23,18 @@ class HomeViewModel @Inject constructor(
         fetchData()
     }
 
-    private fun fetchData() {
-        _state.value = _state.value.copy(loading = true)
+    fun fetchData() {
+        newState { copy(loading = true) }
         _dataJob = data.onEach { locations ->
-            _state.value = _state.value.copy(
-                loading = false,
-                locationsWithTemperature = locations
-            )
+            newState {
+                copy(
+                    loading = false,
+                    locationsWithTemperature = locations
+                )
+            }
         }
             .catch { cause ->
+                newState { copy(loading = false, exception = cause) }
                 Log.e(TAG, "cause flow", cause)
             }
             .launchIn(viewModelScope)

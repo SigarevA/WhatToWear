@@ -5,7 +5,7 @@
     <string name="home_tab_favorites">Favorites</string>
     <string name="setting_location__screen_btn_text">Next</string>
     <string name="setting_location_title_screen">LocationName</string>
-    <string name="item_location_list_subtitle">Current temperature %s</string>
+    <string name="item_location_list_subtitle">Current temperature %s \u2103</string>
 
     <string name="detail_location_screen_title_dialog">Delete location?</string>
     <string name="detail_location_screen_subtitle_dialog">This action cannot be undone.</string>
@@ -15,9 +15,18 @@
     <string name="detail_location_wind">wind %f m/s from NE</string>
     <string name="detail_location_humidity">humidity %d%%</string>
     <string name="detail_location_current_pressure">pressure %d hPa</string>
-    
+
     <string name="detail_location_morning">Morning</string>
     <string name="detail_location_day">Day</string>
     <string name="detail_location_evening">Evening</string>
     <string name="detail_location_night">Night</string>
+
+    <string name="weather_temperature">%d \u2103</string>
+    <string name="home_screen_empty_content">You don\'t have any added locations.\nTap the button below to get started.</string>
+    <string name="home_screen_error">Oops! An error has occurred</string>
+    <string name="home_screen_retry">RETRY</string>
+    <string name="geolocation_cancel">Cancel</string>
+    <string name="geolocation_ok">Ok</string>
+    <string name="geolocation_access_to_location">Access to location</string>
+    <string name="geolocation_access_to_location_description">To use this feature, the app needs access to the location.</string>
 </resources>

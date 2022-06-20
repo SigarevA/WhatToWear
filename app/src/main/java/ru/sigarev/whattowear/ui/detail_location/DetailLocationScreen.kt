@@ -1,6 +1,6 @@
 package ru.sigarev.whattowear.ui.detail_location
 
-import android.util.Log
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -25,7 +25,11 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.sigarev.whattowear.R
+import ru.sigarev.whattowear.domain.models.DayTemperature
 import ru.sigarev.whattowear.domain.models.LocationWithWeather
+import ru.sigarev.whattowear.domain.models.Weather
+import ru.sigarev.whattowear.ui.utils.ErrorComponent
+import ru.sigarev.whattowear.ui.utils.LoadingComponent
 import ru.sigarev.whattowear.utils.Constraints
 import java.text.SimpleDateFormat
 import java.util.*
@@ -38,17 +42,25 @@ fun DetailLocationScreen(
     navigator: DestinationsNavigator
 ) {
     val state by viewModel.state.collectAsState()
-    DetailLocationContent(state,
-        navUp = {
-            navigator.navigateUp()
-        },
-        onClickDelete = {
-            viewModel.processOnClickDelete()
-        },
-        onRefresh = {
-            viewModel.processRefresh()
+    if (state.isLoading) {
+        LoadingComponent()
+    } else if (!state.isSuccess && state.isFailure) {
+        ErrorComponent(Modifier.fillMaxHeight()) {
+            viewModel.initLoading()
         }
-    )
+    } else {
+        DetailLocationContent(state,
+            navUp = {
+                navigator.navigateUp()
+            },
+            onClickDelete = {
+                viewModel.processOnClickDelete()
+            },
+            onRefresh = {
+                viewModel.processRefresh()
+            }
+        )
+    }
 
     if (state.isDeletion) {
         LocationDeletionDialog(
@@ -183,32 +195,9 @@ fun SuccessDetailLocationContent(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Log.d("trt", "${Constraints.imageWeatherBaseUrl}${content.weather.icon}.png")
-                AsyncImage(
-                    model = "${Constraints.imageWeatherBaseUrl}${content.weather.icon}.png",
-                    //model = "https://thumbs.dreamstime.com/b/rainbow-love-heart-background-red-wood-60045149.jpg",
-                    contentDescription = "icon weather",
-                    placeholder = painterResource(R.drawable.ic_outline_cloud),
-                    error = painterResource(R.drawable.ic_outline_cloud),
-                    modifier = Modifier.size(72.dp),
-                    onLoading = {
-                        Log.d("trt", "loading")
-                    },
-                    onError = {
-                        Log.e("trt", "error")
-                    }
-                )
-                Text(
-                    content.weather.currentTemperature.toString(),
-                    color = MaterialTheme.colors.onSurface,
-                    style = MaterialTheme.typography.h3
-                )
-            }
+
+            CurrentTemperatureComponent(weather = content.weather)
+
             Text(
                 text = content.weather.mainWeather,
                 color = MaterialTheme.colors.onSurface,
@@ -216,29 +205,9 @@ fun SuccessDetailLocationContent(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TemperatureForecast(
-                    time = stringResource(id = R.string.detail_location_morning),
-                    temperature = content.weather.dayTemperature.morn
-                )
-                TemperatureForecast(
-                    time = stringResource(id = R.string.detail_location_day),
-                    temperature = content.weather.dayTemperature.day
-                )
-                TemperatureForecast(
-                    time = stringResource(id = R.string.detail_location_evening),
-                    temperature = content.weather.dayTemperature.eve
-                )
-                TemperatureForecast(
-                    time = stringResource(id = R.string.detail_location_night),
-                    temperature = content.weather.dayTemperature.night
-                )
-            }
+
+            DaytimeTemperatureComponent(dayTemperature = content.weather.dayTemperature)
+
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -246,61 +215,119 @@ fun SuccessDetailLocationContent(
                     .padding(horizontal = 16.dp)
                     .background(color = MaterialTheme.colors.onSurface.copy(alpha = 0.4f))
             )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-            ) {
-                Icon(
-                    painterResource(id = R.drawable.ic_wind),
-                    null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    stringResource(id = R.string.detail_location_wind, content.weather.windSpeed),
-                    modifier = Modifier.padding(start = 12.dp)
-                )
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-            ) {
-                Icon(
-                    painterResource(id = R.drawable.ic_humidity), null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    stringResource(
-                        id = R.string.detail_location_humidity,
-                        content.weather.humidity
-                    ),
-                    modifier = Modifier.padding(start = 12.dp)
-                )
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-            ) {
-                Icon(
-                    painterResource(id = R.drawable.ic_pressure),
-                    null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    stringResource(
-                        id = R.string.detail_location_current_pressure,
-                        content.weather.pressure
-                    ),
-                    modifier = Modifier.padding(start = 12.dp)
-                )
-            }
+
+            WeatherCharacteristicComponent(content.weather)
         }
+    }
+}
+
+@Composable
+fun CurrentTemperatureComponent(
+    modifier: Modifier = Modifier,
+    weather: Weather
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        AsyncImage(
+            model = "${Constraints.imageWeatherBaseUrl}${weather.icon}.png",
+            contentDescription = "icon weather",
+            placeholder = painterResource(R.drawable.ic_outline_cloud),
+            error = painterResource(R.drawable.ic_outline_cloud),
+            modifier = Modifier.size(72.dp),
+        )
+        Text(
+            stringResource(id = R.string.weather_temperature, weather.currentTemperature),
+            color = MaterialTheme.colors.onSurface,
+            style = MaterialTheme.typography.h3
+        )
+    }
+}
+
+@Composable
+fun DaytimeTemperatureComponent(
+    modifier: Modifier = Modifier,
+    dayTemperature: DayTemperature
+) {
+    Row(
+        modifier = modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        TemperatureForecast(
+            time = stringResource(id = R.string.detail_location_morning),
+            temperature = dayTemperature.morn
+        )
+        TemperatureForecast(
+            time = stringResource(id = R.string.detail_location_day),
+            temperature = dayTemperature.day
+        )
+        TemperatureForecast(
+            time = stringResource(id = R.string.detail_location_evening),
+            temperature = dayTemperature.eve
+        )
+        TemperatureForecast(
+            time = stringResource(id = R.string.detail_location_night),
+            temperature = dayTemperature.night
+        )
+    }
+}
+
+@Composable
+fun WeatherCharacteristicComponent(weather: Weather) {
+    WeatherCharacteristicElementComponent(
+        info = stringResource(id = R.string.detail_location_wind, weather.windSpeed),
+        icon = R.drawable.ic_wind
+    )
+
+    WeatherCharacteristicElementComponent(
+        info = stringResource(
+            id = R.string.detail_location_humidity,
+            weather.humidity
+        ),
+        icon = R.drawable.ic_humidity
+    )
+
+    WeatherCharacteristicElementComponent(
+        info = stringResource(
+            id = R.string.detail_location_current_pressure,
+            weather.pressure
+        ),
+        icon = R.drawable.ic_pressure
+    )
+}
+
+@Composable
+fun WeatherCharacteristicElementComponent(
+    modifier: Modifier = Modifier,
+    info: String,
+    @DrawableRes icon: Int
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.padding(start = 16.dp, top = 16.dp)
+    ) {
+        Icon(
+            painterResource(id = icon),
+            null,
+            modifier = Modifier.size(24.dp)
+        )
+        Text(
+            info,
+            modifier = Modifier.padding(start = 12.dp)
+        )
     }
 }
 
 @Composable
 fun TemperatureForecast(
     time: String,
-    temperature: Double,
+    temperature: Int,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -318,7 +345,7 @@ fun TemperatureForecast(
             modifier = Modifier.height(24.dp)
         )
         Text(
-            text = temperature.toString(),
+            text = stringResource(id = R.string.weather_temperature, temperature),
             color = MaterialTheme.colors.onSurface.copy(alpha = 0.8f),
             style = MaterialTheme.typography.body1
         )

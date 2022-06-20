@@ -27,7 +27,11 @@ android {
         properties.load(project.rootProject.file("local.properties").inputStream())
 
         buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
-        buildConfigField("String", "YANDEX_MAP_KEY", "\"${properties.getProperty("YANDEX_MAP_KEY")}\"")
+        buildConfigField(
+            "String",
+            "YANDEX_MAP_KEY",
+            "\"${properties.getProperty("YANDEX_MAP_KEY")}\""
+        )
     }
 
     buildTypes {
@@ -103,6 +107,7 @@ dependencies {
 
     implementation(AppDependencies.UI.accompanistSwiperefresh)
     implementation(AppDependencies.UI.coliCompose)
+    implementation(AppDependencies.Permissions.accompanistPermissions)
 }
 
 kapt {
