@@ -21,6 +21,11 @@ object AppDependencies {
         const val coliCompose = "io.coil-kt:coil-compose:${Versions.coil}"
     }
 
+    object Permissions {
+        const val accompanistPermissions =
+            "com.google.accompanist:accompanist-permissions:${Versions.accompanist}"
+    }
+
     object Test {
         const val espresso = "androidx.test.espresso:espresso-core:3.4.0"
         const val androidJunit = "androidx.test.ext:junit:1.1.3"

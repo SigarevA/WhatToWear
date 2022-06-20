@@ -29,6 +29,7 @@ import ru.sigarev.whattowear.domain.models.LocationWithTemperature
 import ru.sigarev.whattowear.ui.destinations.DetailLocationScreenDestination
 import ru.sigarev.whattowear.ui.destinations.GeolocationSelectionScreenDestination
 import ru.sigarev.whattowear.ui.detail_location.DetailScreenNavArgs
+import ru.sigarev.whattowear.ui.utils.ErrorComponent
 
 @RootNavGraph(start = true)
 @Destination
@@ -64,6 +65,9 @@ fun HomeScreen(
         },
         onRefresh = {
             viewModel.processOnRefresh()
+        },
+        retry = {
+            viewModel.fetchData()
         }
     )
 }
@@ -78,44 +82,55 @@ fun HomeScreenContent(
     onClickLocation: (Int) -> Unit,
     onClickAddFavorite: (Int) -> Unit,
     onClickRemoveFavorite: (Int) -> Unit,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    retry: () -> Unit
 ) {
     Box(contentAlignment = Alignment.BottomCenter) {
         Column(modifier = Modifier.fillMaxSize()) {
-            TabRow(selectedTabIndex = selectedItem) {
-                tabTitles.forEachIndexed { index, title ->
-                    Tab(selected = selectedItem == index,
-                        onClick = { onTabClick(index) },
-                        text = { Text(text = stringResource(id = title.stringId)) })
+            HomeTabs(selectedItem, tabTitles, onTabClick)
+            if (stateScreen.loading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
-            }
-            stateScreen.locationsWithTemperature?.let { locations ->
-                if (locations.isEmpty())
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "You don't have any added locations.\nTap the button below to get started.",
-                            color = MaterialTheme.colors.onSurface,
-                            style = MaterialTheme.typography.body1,
-                        )
-                    }
-                else
-                    SwipeRefresh(
-                        state = rememberSwipeRefreshState(stateScreen.isRefreshing),
-                        onRefresh = { onRefresh() }
-                    ) {
-                        LazyColumn {
-                            items(locations) { locationInList ->
-                                LocationListComponent(
-                                    locationInList, onClickLocation,
-                                    onClickAddFavorite = onClickAddFavorite,
-                                    onClickRemoveFavorite = onClickRemoveFavorite
-                                )
+            } else if (with(stateScreen) { locationsWithTemperature == null && exception != null }) {
+                Box(
+                    Modifier.weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ErrorComponent(retry = retry)
+                }
+            } else if (stateScreen.locationsWithTemperature != null) {
+                stateScreen.locationsWithTemperature.let { locations ->
+                    if (locations.isEmpty())
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                stringResource(id = R.string.home_screen_empty_content),
+                                color = MaterialTheme.colors.onSurface,
+                                style = MaterialTheme.typography.body1,
+                            )
+                        }
+                    else
+                        SwipeRefresh(
+                            state = rememberSwipeRefreshState(stateScreen.isRefreshing),
+                            onRefresh = { onRefresh() }
+                        ) {
+                            LazyColumn {
+                                items(locations) { locationInList ->
+                                    LocationListComponent(
+                                        locationInList, onClickLocation,
+                                        onClickAddFavorite = onClickAddFavorite,
+                                        onClickRemoveFavorite = onClickRemoveFavorite
+                                    )
+                                }
                             }
                         }
-                    }
+                }
             }
         }
 
@@ -123,6 +138,21 @@ fun HomeScreenContent(
             Modifier.padding(end = 16.dp, bottom = 32.dp),
             onClickAddingLocation
         )
+    }
+}
+
+@Composable
+fun HomeTabs(
+    selectedItem: Int,
+    tabTitles: List<TabContent>,
+    onTabClick: (Int) -> Unit
+) {
+    TabRow(selectedTabIndex = selectedItem) {
+        tabTitles.forEachIndexed { index, title ->
+            Tab(selected = selectedItem == index,
+                onClick = { onTabClick(index) },
+                text = { Text(text = stringResource(id = title.stringId)) })
+        }
     }
 }
 
